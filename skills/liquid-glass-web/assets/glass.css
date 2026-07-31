@@ -1,0 +1,300 @@
+/* ============================================================
+   LIQUID GLASS — canonical material stylesheet (glass.css)
+   Source of truth for the liquid-glass-web skill.
+
+   COPY THIS FILE VERBATIM. Customize only the design tokens.
+   Every value below was tuned and debugged against real output;
+   re-deriving the material from memory loses those fixes.
+
+   Layer model per glass pane (.lg):
+     1. ::before — translucent tint + backdrop-filter frost
+        (blur + saturate + brightness). Works in ALL browsers.
+     2. ::before (enhanced) — SVG feDisplacementMap refraction via
+        `backdrop-filter: url(#lg-dist)`. CHROMIUM ONLY (WebKit bug
+        245510), gated by JS adding `html.refract`
+        (see assets/refraction-snippet.html).
+     3. ::after — specular rim (inset shadows) + glossy sheen +
+        cursor-tracked spotlight that fades via @property.
+
+   Class map:
+     .lg            base glass pane
+     .lg--thick     large surfaces (cards, modals): heavier frost/shadow
+     .lg--thin      small chrome (nav pills, docks): lighter frost/shadow
+     .lg-materialize  entrance animation; stagger with --enter-delay
+     .lg-chip       NON-glass chip for use inside glass (no glass-on-glass)
+     .lg-cta        accent-filled chip variant
+     .lg-backdrop   optional colorful blob backdrop (glass needs something
+                    to refract; skip if the page has its own imagery)
+   ============================================================ */
+
+/* ---------- Design tokens ---------- */
+:root {
+  color-scheme: light dark;
+  /* material */
+  --lg-blur: 16px;          /* used by the Chromium refract path */
+  --lg-sat: 1.8;
+  --lg-bright: 1.08;
+  --lg-radius: 26px;
+  /* backdrop hues (blobs / accents) */
+  --hue-a: #7c5cff;
+  --hue-b: #22d3ee;
+  --hue-c: #ff5c8a;
+  --hue-d: #ffb86b;
+  /* light theme */
+  --bg: #eef0f6;
+  --ink: #10131c;
+  --ink-dim: rgba(16, 19, 28, 0.74);      /* vibrancy: not flat gray */
+  --hairline: rgba(16, 19, 28, 0.12);
+  --lg-tint: 255 255 255;
+  --lg-tint-a: 0.52;
+  --lg-border: rgba(255, 255, 255, 0.65);
+  --lg-spec: rgba(255, 255, 255, 0.95);
+  --lg-shadow: 0 24px 60px rgba(24, 30, 70, 0.20);      /* thick surfaces */
+  --lg-shadow-sm: 0 10px 28px rgba(24, 30, 70, 0.12);   /* thin chrome */
+  --sheen-a: 0.40;
+  --spot-max: 0.25;         /* cursor spotlight peak alpha */
+  --chip-bg: rgba(16, 19, 28, 0.055);
+  --chip-border: rgba(16, 19, 28, 0.16);
+  --accent: #3f3aed;
+  --accent-ink: #fff;
+  --solid: rgba(255, 255, 255, 0.97);     /* reduced-transparency fill */
+  --blob-opacity: 0.55;
+}
+[data-theme="dark"] {
+  --bg: #0a0c15;
+  --ink: #f2f4fa;
+  --ink-dim: rgba(242, 244, 250, 0.72);
+  --hairline: rgba(255, 255, 255, 0.12);
+  --lg-tint: 16 18 30;
+  --lg-tint-a: 0.44;
+  --lg-border: rgba(255, 255, 255, 0.16);
+  --lg-spec: rgba(255, 255, 255, 0.45);
+  --lg-shadow: 0 24px 60px rgba(0, 0, 0, 0.60);
+  --lg-shadow-sm: 0 10px 28px rgba(0, 0, 0, 0.45);
+  --sheen-a: 0.16;
+  --spot-max: 0.14;
+  --chip-bg: rgba(255, 255, 255, 0.07);
+  --chip-border: rgba(255, 255, 255, 0.16);
+  --accent: #9db4ff;
+  --accent-ink: #0a0c15;
+  --solid: rgba(15, 17, 28, 0.97);
+  --blob-opacity: 0.42;
+}
+/* system dark preference, unless the user toggled to light */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0a0c15;
+    --ink: #f2f4fa;
+    --ink-dim: rgba(242, 244, 250, 0.72);
+    --hairline: rgba(255, 255, 255, 0.12);
+    --lg-tint: 16 18 30;
+    --lg-tint-a: 0.44;
+    --lg-border: rgba(255, 255, 255, 0.16);
+    --lg-spec: rgba(255, 255, 255, 0.45);
+    --lg-shadow: 0 24px 60px rgba(0, 0, 0, 0.60);
+    --lg-shadow-sm: 0 10px 28px rgba(0, 0, 0, 0.45);
+    --sheen-a: 0.16;
+    --spot-max: 0.14;
+    --chip-bg: rgba(255, 255, 255, 0.07);
+    --chip-border: rgba(255, 255, 255, 0.16);
+    --accent: #9db4ff;
+    --accent-ink: #0a0c15;
+    --solid: rgba(15, 17, 28, 0.97);
+    --blob-opacity: 0.42;
+  }
+}
+
+/* ---------- The material ---------- */
+/* Cursor spotlight strength — registered so hover can FADE it in and out
+   smoothly; browsers without @property simply switch it instantly. */
+@property --spot-a {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+.lg {
+  position: relative;
+  isolation: isolate;               /* contain the pseudo-element stack */
+  border-radius: var(--lg-radius);
+  border: 1px solid var(--lg-border);
+  box-shadow: var(--lg-shadow);
+  --spot-a: 0;
+}
+@media (hover: hover) {
+  .lg:hover { --spot-a: var(--spot-max); }
+}
+
+/* Layer 1+2: tint + frost (universal); refraction override further down */
+.lg::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  /* concentric corners: inner radius = outer radius − 1px border,
+     otherwise the fill pulls away from the frame at the corners */
+  border-radius: calc(var(--lg-radius) - 1px);
+  background: rgb(var(--lg-tint) / var(--lg-tint-a));
+  /* values inlined (not var()) — Safari can drop backdrop-filter when the
+     value list contains CSS variables */
+  -webkit-backdrop-filter: blur(16px) saturate(1.8) brightness(1.08);
+  backdrop-filter: blur(16px) saturate(1.8) brightness(1.08);
+}
+
+/* Layer 3: specular rim + sheen + cursor spotlight.
+   Inset speculars MUST live here: painted on the element itself they sit
+   under the frost layer (paint order) and disappear. */
+.lg::after {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  border-radius: calc(var(--lg-radius) - 1px); pointer-events: none;
+  box-shadow:
+    inset 0 1px 1px var(--lg-spec),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  background:
+    radial-gradient(420px circle at var(--mx, 50%) var(--my, -40%),
+      rgb(255 255 255 / var(--spot-a)) 0%,
+      rgb(255 255 255 / calc(var(--spot-a) * 0.55)) 26%,
+      rgb(255 255 255 / calc(var(--spot-a) * 0.18)) 55%,
+      transparent 80%),
+    linear-gradient(125deg,
+      rgba(255, 255, 255, var(--sheen-a)),
+      rgba(255, 255, 255, 0.04) 32%, transparent 60%);
+}
+
+/* Refraction — added by JS only where SVG backdrop filters actually render
+   (Chromium; see refraction-snippet.html). Safari/Firefox keep the frosted
+   layer above untouched. */
+html.refract .lg::before {
+  -webkit-backdrop-filter: url(#lg-dist) blur(calc(var(--lg-blur) * 0.3)) saturate(var(--lg-sat)) brightness(var(--lg-bright));
+  backdrop-filter: url(#lg-dist) blur(calc(var(--lg-blur) * 0.3)) saturate(var(--lg-sat)) brightness(var(--lg-bright));
+}
+
+/* Squircle corners where supported (Chrome/Edge 139+); harmless elsewhere.
+   corner-shape does NOT inherit — it must be applied to the fill layers
+   as well, or their circular corners pull away from the squircle frame,
+   leaving a crescent-shaped gap at each corner. */
+@supports (corner-shape: squircle) {
+  .lg, .lg::before, .lg::after { corner-shape: squircle; }
+}
+
+/* Material weight hierarchy: bigger surfaces read thicker */
+.lg--thick { --lg-blur: 24px; }
+.lg--thick::before {
+  -webkit-backdrop-filter: blur(24px) saturate(1.8) brightness(1.08);
+  backdrop-filter: blur(24px) saturate(1.8) brightness(1.08);
+}
+.lg--thin { --lg-blur: 12px; box-shadow: var(--lg-shadow-sm); }
+.lg--thin::before {
+  -webkit-backdrop-filter: blur(12px) saturate(1.8) brightness(1.06);
+  backdrop-filter: blur(12px) saturate(1.8) brightness(1.06);
+}
+
+/* Eased theme changes — no abrupt brightness jumps */
+body, .lg-backdrop, .lg, .lg::before {
+  transition: background-color 0.3s ease, color 0.3s ease,
+              border-color 0.3s ease, box-shadow 0.3s ease,
+              --spot-a 0.45s ease;
+}
+
+/* Materialize on load: blur + scale + fade arrive together.
+   CRITICAL: the animation must END with the filter removed (fill:
+   backwards, no lingering `filter: blur(0)`) — ANY filter left on a
+   glass element creates a new backdrop root and silently kills the
+   backdrop-filter frost forever. */
+@keyframes lg-materialize {
+  0%   { opacity: 0; transform: translateY(12px) scale(0.97); filter: blur(16px); }
+  60%  { filter: blur(2px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+.lg-materialize {
+  animation: lg-materialize 0.65s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation-delay: var(--enter-delay, 0s);   /* stagger: .14s, .22s, .30s… */
+}
+
+/* ---------- Chips (deliberately NOT glass: no glass-on-glass) ---------- */
+.lg-chip {
+  display: inline-flex; align-items: center; gap: 0.5em;
+  padding: 0.48em 0.95em; border-radius: 999px;
+  border: 1px solid var(--chip-border);
+  background: var(--chip-bg);
+  color: var(--ink);
+  font-size: 0.86rem; text-decoration: none; cursor: pointer;
+  transition: transform 160ms ease-out, background-color 0.3s ease,
+              color 0.3s ease, border-color 0.3s ease;
+}
+.lg-chip:hover { transform: translateY(-1px); }
+.lg-chip:active { transform: translateY(0) scale(0.97); }  /* press on pointer-down */
+.lg-chip .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.lg-cta { background: var(--accent); color: var(--accent-ink); border: none; }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+/* ---------- Optional blob backdrop ---------- */
+.lg-backdrop {
+  position: fixed; inset: 0; z-index: -2;
+  overflow: hidden; background: var(--bg);
+}
+.lg-backdrop span {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); opacity: var(--blob-opacity);
+  will-change: transform;
+}
+.lg-backdrop .b1 { width: 52vmax; height: 52vmax; left: -14vmax; top: -16vmax; background: var(--hue-a); animation: lg-drift1 28s ease-in-out infinite alternate; }
+.lg-backdrop .b2 { width: 44vmax; height: 44vmax; right: -12vmax; top: -6vmax;  background: var(--hue-b); animation: lg-drift2 32s ease-in-out infinite alternate; }
+.lg-backdrop .b3 { width: 46vmax; height: 46vmax; left: 8vmax;  bottom: -20vmax; background: var(--hue-c); animation: lg-drift3 26s ease-in-out infinite alternate; }
+.lg-backdrop .b4 { width: 34vmax; height: 34vmax; right: 4vmax; bottom: -10vmax; background: var(--hue-d); animation: lg-drift4 34s ease-in-out infinite alternate; }
+@keyframes lg-drift1 { to { transform: translate3d(9vmax, 6vmax, 0) scale(1.12); } }
+@keyframes lg-drift2 { to { transform: translate3d(-8vmax, 9vmax, 0) scale(0.92); } }
+@keyframes lg-drift3 { to { transform: translate3d(10vmax, -7vmax, 0) scale(1.1); } }
+@keyframes lg-drift4 { to { transform: translate3d(-7vmax, -8vmax, 0) scale(1.15); } }
+
+/* ---------- Accessibility opt-outs ---------- */
+@media (prefers-reduced-transparency: reduce) {
+  .lg::before, html.refract .lg::before,
+  .lg--thick::before, .lg--thin::before {
+    background: var(--solid);
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+  }
+  .lg::after { background: none; }
+  .lg-backdrop span { display: none; }
+}
+/* Reduced motion ≠ no feedback: movement is removed (entrances, drifting
+   blobs, hover/press translation), short color fades stay. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; }
+  .lg-chip, .lg-chip:hover, .lg-chip:active { transform: none; }
+  .lg-chip { transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
+}
+/* prefers-contrast: near-solid surfaces with a defined border */
+@media (prefers-contrast: more) {
+  .lg { border: 1px solid var(--ink); }
+  .lg::before, html.refract .lg::before,
+  .lg--thick::before, .lg--thin::before {
+    background: var(--solid);
+    -webkit-backdrop-filter: none; backdrop-filter: none;
+  }
+  .lg::after { background: none; }
+  .lg-chip { border-color: var(--ink); }
+}
+@media (forced-colors: active) {
+  .lg { border: 1px solid CanvasText; }
+  .lg::before, html.refract .lg::before,
+  .lg--thick::before, .lg--thin::before { background: Canvas; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .lg::after { display: none; }
+  .lg-backdrop { display: none; }
+}
+
+/* ---------- Print: flatten the material cleanly ---------- */
+@media print {
+  .lg-backdrop { display: none !important; }
+  body { background: #fff; color: #000; }
+  .lg-materialize { animation: none !important; }
+  .lg { border: 1px solid #ddd; border-radius: 10px; box-shadow: none; }
+  .lg::before, html.refract .lg::before,
+  .lg--thick::before, .lg--thin::before { background: #fff; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .lg::after { display: none; }
+  .lg-chip { border-color: #ccc; background: #fff; color: #000; }
+  .lg-cta { background: #fff; color: #000; border: 1px solid #999; }
+}

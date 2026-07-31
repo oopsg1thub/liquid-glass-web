@@ -1,0 +1,77 @@
+<!-- ============================================================
+  LIQUID GLASS — refraction snippet (paste before </body>)
+  Pairs with assets/glass.css. Copy verbatim.
+  Part 1: SVG displacement filter (turbulence-driven, size-agnostic,
+          with a slight RGB split for chromatic aberration).
+  Part 2: JS runtime gate — adds `refract` to <html> only where SVG
+          backdrop filters actually render (Chromium; WebKit bug 245510).
+          @supports parse-tests false-positive in Safari/Firefox, so the
+          supports check is paired with a Chromium-only API.
+  Part 3: JS cursor spotlight — 1:1 pointer tracking; the fade in/out is
+          handled in CSS via --spot-a, so there is NO pointerleave reset
+          (the spotlight dims in place instead of snapping away).
+  ============================================================ -->
+
+<!-- Part 1: refraction filter -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="lg-dist" x="-30%" y="-30%" width="160%" height="160%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.007 0.007" numOctaves="2" seed="12" result="noise"/>
+      <feGaussianBlur in="noise" stdDeviation="2.5" result="map"/>
+      <feDisplacementMap in="SourceGraphic" in2="map" scale="38" xChannelSelector="R" yChannelSelector="G" result="dispR"/>
+      <feDisplacementMap in="SourceGraphic" in2="map" scale="45" xChannelSelector="R" yChannelSelector="G" result="dispG"/>
+      <feDisplacementMap in="SourceGraphic" in2="map" scale="52" xChannelSelector="R" yChannelSelector="G" result="dispB"/>
+      <feColorMatrix in="dispR" type="matrix" values="1 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chR"/>
+      <feColorMatrix in="dispG" type="matrix" values="0 0 0 0 0  0 1 0 0 0  0 0 0 0 0  0 0 0 1 0" result="chG"/>
+      <feColorMatrix in="dispB" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 1 0 0  0 0 0 1 0" result="chB"/>
+      <feBlend in="chR" in2="chG" mode="screen" result="chRG"/>
+      <feBlend in="chRG" in2="chB" mode="screen"/>
+    </filter>
+  </defs>
+</svg>
+
+<script>
+/* Part 2: refraction gate */
+(function () {
+  var canRefract = false;
+  try {
+    canRefract =
+      typeof CSS !== "undefined" &&
+      CSS.supports("backdrop-filter", "url(#lg-dist)") &&
+      "userAgentData" in navigator; // Chromium-only API
+  } catch (e) { canRefract = false; }
+
+  if (canRefract) document.documentElement.classList.add("refract");
+})();
+
+/* Part 3: cursor spotlight (1:1, direct manipulation) */
+(function () {
+  var fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
+  var still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!fine || still) return;
+
+  document.querySelectorAll(".lg").forEach(function (el) {
+    el.addEventListener("pointermove", function (e) {
+      var r = el.getBoundingClientRect();
+      el.style.setProperty("--mx", (e.clientX - r.left) + "px");
+      el.style.setProperty("--my", (e.clientY - r.top) + "px");
+    });
+    // No reset on pointerleave: the spotlight fades out in place
+    // via the --spot-a hover transition instead of snapping away.
+  });
+})();
+
+/* Optional: dark/light toggle — wire any button with id="themeToggle".
+   Theme changes cross-fade via the transitions in glass.css. */
+(function () {
+  var root = document.documentElement;
+  var btn = document.getElementById("themeToggle");
+  if (!btn) return;
+  btn.addEventListener("click", function () {
+    var current =
+      root.dataset.theme ||
+      (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    root.dataset.theme = current === "dark" ? "light" : "dark";
+  });
+})();
+</script>

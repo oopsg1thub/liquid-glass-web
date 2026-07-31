@@ -1,0 +1,51 @@
+name: Browser rendering bug
+description: Report a material, fallback, motion, or accessibility problem.
+title: "[Browser] "
+labels: [browser]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a rendering issue. Please test an unmodified bundled example when possible.
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and exact version
+      placeholder: Safari 26.5.2 on macOS 26.5
+    validations:
+      required: true
+  - type: dropdown
+    id: example
+    attributes:
+      label: Affected page
+      options:
+        - Quick Start
+        - Component Gallery
+        - Music Player
+        - Résumé / Portfolio
+        - GitHub Pages landing page
+        - Custom implementation
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior and reproduction steps
+    validations:
+      required: true
+  - type: textarea
+    id: preferences
+    attributes:
+      label: Relevant system preferences
+      description: Include reduced motion, reduced transparency, increased contrast, forced colors, zoom, and theme when relevant.
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots or console output
+      description: Remove private information before attaching evidence.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Liquid Glass Web"
+  short_description: "Build faithful, accessible Liquid Glass interfaces"
+  default_prompt: "Use $liquid-glass-web to apply the canonical Liquid Glass material to this web interface."
