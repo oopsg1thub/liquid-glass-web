@@ -20,8 +20,8 @@ fallbacks instead of a broken approximation.
 ## Preview
 
 [Open the live GitHub Pages demo](https://oopsg1thub.github.io/liquid-glass-web/).
-The landing page renders one live glass hero and links to four complete examples,
-so it does not spend the page's compositing budget on repeated previews.
+The static landing page links directly to the four self-contained HTML examples
+inside the installable skill.
 
 ![Liquid Glass Web preview](docs/preview.png)
 
@@ -43,8 +43,8 @@ skills/liquid-glass-web/
 ```
 
 The skill directory is self-contained and can be installed directly from its
-GitHub subpath. Repository-root scripts, tests, and `package.json` exist only to
-validate and publish the skill; `package.json` is marked `private: true`.
+GitHub subpath. The repository root contains only documentation and the static
+GitHub Pages example index; there is no package or build step.
 
 ## Install for Codex
 
@@ -164,14 +164,13 @@ canonical stylesheet and snippet, and each remains within the five-pane budget.
 
 | Example | Demonstrates | Live |
 |---|---|---|
-| [Quick Start](skills/liquid-glass-web/references/example-quick-start.html) | Minimal nav, hero, theme, and fallbacks | [Open](https://oopsg1thub.github.io/liquid-glass-web/examples/example-quick-start.html) |
-| [Component Gallery](skills/liquid-glass-web/references/example-components.html) | Nav, card, chips, standalone CTA, dialog | [Open](https://oopsg1thub.github.io/liquid-glass-web/examples/example-components.html) |
-| [Music Player](skills/liquid-glass-web/references/example-music-player.html) | Semantic transport and progress; separate demo script | [Open](https://oopsg1thub.github.io/liquid-glass-web/examples/example-music-player.html) |
-| [Résumé / Portfolio](skills/liquid-glass-web/references/example-resume.html) | Responsive five-pane layout and print | [Open](https://oopsg1thub.github.io/liquid-glass-web/examples/example-resume.html) |
+| [Quick Start](skills/liquid-glass-web/references/example-quick-start.html) | Minimal nav, hero, theme, and fallbacks | [Open](https://oopsg1thub.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-quick-start.html) |
+| [Component Gallery](skills/liquid-glass-web/references/example-components.html) | Nav, card, chips, standalone CTA, dialog | [Open](https://oopsg1thub.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-components.html) |
+| [Music Player](skills/liquid-glass-web/references/example-music-player.html) | Semantic transport and progress; separate demo script | [Open](https://oopsg1thub.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-music-player.html) |
+| [Résumé / Portfolio](skills/liquid-glass-web/references/example-resume.html) | Responsive five-pane layout and print | [Open](https://oopsg1thub.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-resume.html) |
 
-Edit the files in `templates/examples/`, then run `npm run build`. Generated
-examples under the skill directory are tracked so an installed skill remains
-self-contained; GitHub Pages output under `.site-dist/` is temporary and ignored.
+Edit these HTML files directly. GitHub Pages serves the same tracked files, so
+the online previews and the installed skill cannot drift apart.
 
 ## Browser support and fallback ladder
 
@@ -215,9 +214,8 @@ so it keeps the same frost baseline.
 - Print should flatten to opaque white surfaces without animation, blur, or
   decorative background blobs.
 
-The CI suite rejects duplicate IDs, remote example dependencies, more than five
-panes, serious/critical axe violations, console errors, an incorrect engine gate,
-broken theme switching, stale generated examples, and frost lost after entrance.
+Before publishing changes, open all four examples locally and check both themes,
+keyboard focus, narrow layouts, reduced motion, print, and browser fallbacks.
 
 ## Troubleshooting
 
@@ -249,36 +247,24 @@ raising blur or tint until the background has something to refract.
 Reduce the pane count, replace fixed glass with sticky chrome, remove unused
 compositing hints, and check ancestor filters/transforms.
 
-## Develop and validate
+## Validate
 
-Requires Node.js 20+ and Python 3 for the local Codex validator.
+There is no repository build step. Edit the skill and examples directly. When
+Codex's local validator is available, check the installable directory with:
 
 ```sh
-npm ci
-npx playwright install chromium firefox webkit
-npm run build
-npm run check
-npm test
 python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/liquid-glass-web
 ```
 
-CI also runs the Agent Skills reference validator. Playwright covers Chromium,
-Firefox, and WebKit; axe checks serious and critical accessibility violations.
-GitHub Pages is generated into a temporary artifact and deployed only after the
-validation job succeeds.
-
-Manual release acceptance covers current Chrome and Safari: light/dark themes,
-keyboard operation, 200% zoom, system accessibility preferences, print, and
-scroll behavior. For `v0.1.0`, a real Firefox application run is deferred;
-Playwright Firefox remains required and the limitation is recorded in the
-release notes.
+Then open the four example files locally and review the browser, accessibility,
+print, and responsive behavior relevant to the change.
 
 ## Contributing
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request. Changes to
 the canonical assets require an intentional compatibility decision, updated
-hashes, regenerated examples, and browser evidence. Most visual adaptations
-should override design tokens or page-specific CSS instead.
+hashes and examples, and browser evidence. Most visual adaptations should
+override design tokens or page-specific CSS instead.
 
 The preferred documentation test is simple: a reader without repository context
 should be able to explain how to install the skill, what may be customized, why

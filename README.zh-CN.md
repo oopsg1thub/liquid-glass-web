@@ -18,8 +18,7 @@ Chromium 启用的位移折射。Safari、Firefox、系统无障碍偏好、强�
 ## 效果预览
 
 [打开 GitHub Pages 在线演示](https://oopsg1thub.github.io/liquid-glass-web/)。
-首页只实时渲染一个 glass hero，再链接到四个完整案例，避免用多组预览耗尽页面
-合成预算。
+静态首页直接链接到可安装 skill 内的四个自包含 HTML 案例。
 
 ![Liquid Glass Web 效果预览](docs/preview.png)
 
@@ -40,8 +39,8 @@ skills/liquid-glass-web/
     └── example-resume.html
 ```
 
-技能目录完全自包含，可以直接从 GitHub 子路径安装。仓库根目录的脚本、测试和
-`package.json` 仅用于校验与发布；`package.json` 已标记为 `private: true`。
+技能目录完全自包含，可以直接从 GitHub 子路径安装。仓库根目录只保留文档和
+GitHub Pages 静态案例索引；没有 package 或构建步骤。
 
 ## 为 Codex 安装
 
@@ -157,14 +156,13 @@ SVG 位移尺度 `38 / 45 / 52` 是锁定的材质参数。
 
 | 案例 | 展示内容 | 在线打开 |
 |---|---|---|
-| [Quick Start](skills/liquid-glass-web/references/example-quick-start.html) | 最小 nav、hero、主题和降级 | [打开](https://oopsg1thub.github.io/liquid-glass-web/examples/example-quick-start.html) |
-| [Component Gallery](skills/liquid-glass-web/references/example-components.html) | nav、card、chip、独立 CTA、dialog | [打开](https://oopsg1thub.github.io/liquid-glass-web/examples/example-components.html) |
-| [Music Player](skills/liquid-glass-web/references/example-music-player.html) | 语义化 transport/progress 与独立业务脚本 | [打开](https://oopsg1thub.github.io/liquid-glass-web/examples/example-music-player.html) |
-| [Résumé / Portfolio](skills/liquid-glass-web/references/example-resume.html) | 响应式五 pane 布局与打印 | [打开](https://oopsg1thub.github.io/liquid-glass-web/examples/example-resume.html) |
+| [Quick Start](skills/liquid-glass-web/references/example-quick-start.html) | 最小 nav、hero、主题和降级 | [打开](https://oopsg1thub.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-quick-start.html) |
+| [Component Gallery](skills/liquid-glass-web/references/example-components.html) | nav、card、chip、独立 CTA、dialog | [打开](https://oopsg1thub.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-components.html) |
+| [Music Player](skills/liquid-glass-web/references/example-music-player.html) | 语义化 transport/progress 与独立业务脚本 | [打开](https://oopsg1thub.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-music-player.html) |
+| [Résumé / Portfolio](skills/liquid-glass-web/references/example-resume.html) | 响应式五 pane 布局与打印 | [打开](https://oopsg1thub.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-resume.html) |
 
-编辑 `templates/examples/` 中的文件后运行 `npm run build`。技能目录下生成的案例
-会被追踪，使安装后的 skill 保持自包含；`.site-dist/` 中的 GitHub Pages 产物是
-临时文件，不纳入 Git。
+直接编辑这些 HTML 文件即可。GitHub Pages 发布的就是同一批已追踪文件，因此
+在线预览与安装后的 skill 不会发生漂移。
 
 ## 浏览器支持与降级阶梯
 
@@ -199,9 +197,8 @@ Safari 继续走磨砂路径，因为在核验日期，
 - 200% 缩放与 320 CSS 像素视口下，控件和内容必须重排，不能裁切或横向滚动。
 - 打印时应变为不透明白色表面，没有动画、模糊或装饰 blob。
 
-CI 会拒绝重复 ID、案例远程依赖、超过五个 pane、axe serious/critical 问题、
-控制台错误、错误的引擎 gate、主题切换失效、生成案例漂移，以及入场动画后丢失
-frost。
+发布变更前，应在本地打开四个案例，检查明暗主题、键盘焦点、窄屏、reduced
+motion、打印和相关浏览器降级。
 
 ## 常见故障
 
@@ -232,32 +229,22 @@ blur 或 tint 补偿。
 减少 pane 数量，用 sticky chrome 替换 fixed glass，移除无用合成提示，并检查
 祖先 filter/transform。
 
-## 开发与验证
+## 验证
 
-需要 Node.js 20+；本机 Codex 校验还需要 Python 3。
+仓库没有构建步骤，直接编辑 skill 与案例。若本机有 Codex 校验器，可检查可安装
+目录：
 
 ```sh
-npm ci
-npx playwright install chromium firefox webkit
-npm run build
-npm run check
-npm test
 python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py skills/liquid-glass-web
 ```
 
-CI 还运行 Agent Skills reference validator。Playwright 覆盖 Chromium、Firefox、
-WebKit；axe 检查 serious 和 critical 无障碍问题。只有完整校验通过后，GitHub
-Pages 才会从临时产物部署。
-
-人工发布验收覆盖当前 Chrome 与 Safari 的明暗主题、键盘、200% 缩放、系统无障碍
-偏好、打印和滚动表现。`v0.1.0` 暂缓真实 Firefox 应用验收；Playwright Firefox
-仍是发布前必过项，这项限制会明确写入 Release。
+随后在本地打开四个案例，人工检查与改动相关的浏览器、无障碍、打印和响应式表现。
 
 ## 贡献
 
 提交 PR 前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。修改 canonical 资产必须是
-明确的兼容性决策，同时更新哈希、重新生成案例并提供浏览器证据。大多数视觉调整
-应该只覆盖设计 token 或页面专属 CSS。
+明确的兼容性决策，同时更新哈希、案例并提供浏览器证据。大多数视觉调整应该只
+覆盖设计 token 或页面专属 CSS。
 
 文档的理想测试很简单：一个不了解仓库背景的读者，应该能独立说明如何安装、哪些
 内容可以定制、Safari 为什么不同，以及如何排查 frost 丢失。
