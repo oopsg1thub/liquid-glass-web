@@ -1,6 +1,6 @@
 # Liquid Glass Web
 
-[中文说明](README.zh-CN.md) · [Live demo](https://oopsg1thub.github.io/liquid-glass-web/) · [Examples](#examples) · [Install](#install-for-codex)
+[中文说明](README.zh-CN.md) · [Live demo](https://voyhuang.github.io/liquid-glass-web/) · [Examples](#examples) · [Install](#install-for-codex)
 
 A Codex-first [Agent Skill](https://agentskills.io/specification) for building
 faithful, accessible Liquid Glass interfaces on the web. Its structure follows
@@ -19,7 +19,7 @@ fallbacks instead of a broken approximation.
 
 ## Preview
 
-[Open the live GitHub Pages demo](https://oopsg1thub.github.io/liquid-glass-web/).
+[Open the live GitHub Pages demo](https://voyhuang.github.io/liquid-glass-web/).
 The static landing page links directly to the four self-contained HTML examples
 inside the installable skill.
 
@@ -51,7 +51,7 @@ GitHub Pages example index; there is no package or build step.
 Ask Codex to install the tagged release:
 
 ```text
-Use $skill-installer to install https://github.com/oopsg1thub/liquid-glass-web/tree/v0.1.0/skills/liquid-glass-web
+Use $skill-installer to install https://github.com/voyhuang/liquid-glass-web/tree/v0.1.0/skills/liquid-glass-web
 ```
 
 To follow `main` instead, replace `v0.1.0` with `main`. Restart Codex if the new
@@ -68,7 +68,7 @@ glassmorphism, frosted panels, or related debugging.
 ## Manual install
 
 ```sh
-git clone --depth 1 --branch v0.1.0 https://github.com/oopsg1thub/liquid-glass-web.git
+git clone --depth 1 --branch v0.1.0 https://github.com/voyhuang/liquid-glass-web.git
 mkdir -p ~/.codex/skills
 cp -R liquid-glass-web/skills/liquid-glass-web ~/.codex/skills/liquid-glass-web
 ```
@@ -164,10 +164,10 @@ canonical stylesheet and snippet, and each remains within the five-pane budget.
 
 | Example | Demonstrates | Live |
 |---|---|---|
-| [Quick Start](skills/liquid-glass-web/references/example-quick-start.html) | Minimal nav, hero, theme, and fallbacks | [Open](https://oopsg1thub.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-quick-start.html) |
-| [Component Gallery](skills/liquid-glass-web/references/example-components.html) | Nav, card, chips, standalone CTA, dialog | [Open](https://oopsg1thub.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-components.html) |
-| [Music Player](skills/liquid-glass-web/references/example-music-player.html) | Semantic transport and progress; separate demo script | [Open](https://oopsg1thub.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-music-player.html) |
-| [Résumé / Portfolio](skills/liquid-glass-web/references/example-resume.html) | Responsive five-pane layout and print | [Open](https://oopsg1thub.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-resume.html) |
+| [Quick Start](skills/liquid-glass-web/references/example-quick-start.html) | Minimal nav, hero, theme, and fallbacks | [Open](https://voyhuang.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-quick-start.html) |
+| [Component Gallery](skills/liquid-glass-web/references/example-components.html) | Nav, card, chips, standalone CTA, dialog | [Open](https://voyhuang.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-components.html) |
+| [Music Player](skills/liquid-glass-web/references/example-music-player.html) | Semantic transport and progress; separate demo script | [Open](https://voyhuang.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-music-player.html) |
+| [Résumé / Portfolio](skills/liquid-glass-web/references/example-resume.html) | Responsive five-pane layout and print | [Open](https://voyhuang.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-resume.html) |
 
 Edit these HTML files directly. GitHub Pages serves the same tracked files, so
 the online previews and the installed skill cannot drift apart.
