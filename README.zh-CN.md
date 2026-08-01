@@ -1,6 +1,6 @@
 # Liquid Glass Web
 
-[English](README.md) · [在线演示](https://oopsg1thub.github.io/liquid-glass-web/) · [案例](#案例) · [安装](#为-codex-安装)
+[English](README.md) · [在线演示](https://voyhuang.github.io/liquid-glass-web/) · [案例](#案例) · [安装](#为-codex-安装)
 
 一个面向 Codex、符合 [Agent Skills 规范](https://agentskills.io/specification)
 的 Liquid Glass 网页实现技能。目录结构遵循
@@ -17,7 +17,7 @@ Chromium 启用的位移折射。Safari、Firefox、系统无障碍偏好、强�
 
 ## 效果预览
 
-[打开 GitHub Pages 在线演示](https://oopsg1thub.github.io/liquid-glass-web/)。
+[打开 GitHub Pages 在线演示](https://voyhuang.github.io/liquid-glass-web/)。
 静态首页直接链接到可安装 skill 内的四个自包含 HTML 案例。
 
 ![Liquid Glass Web 效果预览](docs/preview.png)
@@ -47,7 +47,7 @@ GitHub Pages 静态案例索引；没有 package 或构建步骤。
 让 Codex 安装锁定版本：
 
 ```text
-Use $skill-installer to install https://github.com/oopsg1thub/liquid-glass-web/tree/v0.1.0/skills/liquid-glass-web
+Use $skill-installer to install https://github.com/voyhuang/liquid-glass-web/tree/v0.1.0/skills/liquid-glass-web
 ```
 
 若希望跟随 `main`，把 `v0.1.0` 换成 `main`。如果技能没有立即出现在列表中，
@@ -63,7 +63,7 @@ glassmorphism、磨砂面板及相关调试请求中自动选择它。
 ## 手动安装
 
 ```sh
-git clone --depth 1 --branch v0.1.0 https://github.com/oopsg1thub/liquid-glass-web.git
+git clone --depth 1 --branch v0.1.0 https://github.com/voyhuang/liquid-glass-web.git
 mkdir -p ~/.codex/skills
 cp -R liquid-glass-web/skills/liquid-glass-web ~/.codex/skills/liquid-glass-web
 ```
@@ -156,10 +156,10 @@ SVG 位移尺度 `38 / 45 / 52` 是锁定的材质参数。
 
 | 案例 | 展示内容 | 在线打开 |
 |---|---|---|
-| [Quick Start](skills/liquid-glass-web/references/example-quick-start.html) | 最小 nav、hero、主题和降级 | [打开](https://oopsg1thub.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-quick-start.html) |
-| [Component Gallery](skills/liquid-glass-web/references/example-components.html) | nav、card、chip、独立 CTA、dialog | [打开](https://oopsg1thub.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-components.html) |
-| [Music Player](skills/liquid-glass-web/references/example-music-player.html) | 语义化 transport/progress 与独立业务脚本 | [打开](https://oopsg1thub.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-music-player.html) |
-| [Résumé / Portfolio](skills/liquid-glass-web/references/example-resume.html) | 响应式五 pane 布局与打印 | [打开](https://oopsg1thub.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-resume.html) |
+| [Quick Start](skills/liquid-glass-web/references/example-quick-start.html) | 最小 nav、hero、主题和降级 | [打开](https://voyhuang.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-quick-start.html) |
+| [Component Gallery](skills/liquid-glass-web/references/example-components.html) | nav、card、chip、独立 CTA、dialog | [打开](https://voyhuang.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-components.html) |
+| [Music Player](skills/liquid-glass-web/references/example-music-player.html) | 语义化 transport/progress 与独立业务脚本 | [打开](https://voyhuang.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-music-player.html) |
+| [Résumé / Portfolio](skills/liquid-glass-web/references/example-resume.html) | 响应式五 pane 布局与打印 | [打开](https://voyhuang.github.io/liquid-glass-web/skills/liquid-glass-web/references/example-resume.html) |
 
 直接编辑这些 HTML 文件即可。GitHub Pages 发布的就是同一批已追踪文件，因此
 在线预览与安装后的 skill 不会发生漂移。
